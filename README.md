@@ -1,13 +1,13 @@
 # Python ABC
 
-[![Python 3.9.5](https://img.shields.io/badge/python-3.9.5-blue.svg)](1)
+[![Python 3.9.5](https://img.shields.io/badge/python-3.9.5-blue.svg)][1]
 
-A python implementation of [the ABC Sofware metric](2):
+A python implementation of [the ABC Sofware metric][2]:
 
 > The ABC software metric was introduced by Jerry Fitzpatrick in 1997 to overcome the drawbacks of the LOC. The metric defines an ABC score as a triplet of values that represent the size of a set of source code statements. An ABC score is calculated by counting the number of assignments (A), number of branches (B), and number of conditionals (C) in a program. ABC score can be applied to individual methods, functions, classes, modules or files within a program.
 
 Fitzpatrick's original paper is, at the time of writing, only [available via the Wayback
-Machine](3), so [a copy of it is included in this repo](4) as well.
+Machine][3], so [a copy of it is included in this repo][4] as well.
 
 The paper lists the counting rules for C, C++ and Java, so here are the rules this repo uses for
 Python:
