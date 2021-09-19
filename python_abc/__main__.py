@@ -2,11 +2,11 @@ import argparse
 import os
 from typing import List, Optional, Tuple
 
-from calculate import calculate_abc
-from vector import Vector
+from python_abc.calculate import calculate_abc
+from python_abc.vector import Vector
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         prog="python-abc",
         description="""\
@@ -76,3 +76,7 @@ if __name__ == "__main__":
             print(f"{filename:<{max_path_length}} {'Unable to parse AST':>26}")
         else:
             print(f"{filename:<{max_path_length}} {vector.magnitude:>26}")
+
+
+if __name__ == "__main__":
+    main()

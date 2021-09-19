@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-import calculate
+from python_abc import calculate
 
 
 def assert_source_returns_expected(

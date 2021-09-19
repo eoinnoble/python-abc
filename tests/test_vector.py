@@ -2,7 +2,7 @@ import ast
 
 import pytest
 
-import vector
+from python_abc import vector
 
 
 def test_metric_fields():

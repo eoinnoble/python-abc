@@ -2,7 +2,7 @@ import ast
 from functools import singledispatch
 from typing import List, Union
 
-import vector
+from python_abc import vector
 
 
 @singledispatch

@@ -28,8 +28,8 @@ Install the requirements in your virtual environment of choice, then you can see
 arguments that are available:
 
 ```bash
-$ python main.py --help
-usage: python-abc [-h] [--debug DEBUG] [--sort SORT] [--verbose VERBOSE] path
+$ python -m python_abc --help
+usage: python_abc [-h] [--debug DEBUG] [--sort SORT] [--verbose VERBOSE] path
 
 A python implementation of the ABC Sofware metric: https://en.wikipedia.org/wiki/ABC_Software_Metric
 
@@ -68,14 +68,14 @@ def f(n):
 You can get the barebones output as follows:
 
 ```bash
-$ python main.py /path/to/file.py
+$ python -m python_abc /path/to/file.py
 /path/to/file.py         <1, 7, 10> (12.2)
 ```
 
 Passing the `verbose` flag will give more detail:
 
 ```bash
-$ python main.py file.py --verbose=true
+$ python -m python_abc file.py --verbose=true
 cc    | if a and b:
 b     |     print(a)
 c     | else:
@@ -104,7 +104,7 @@ directory (and its sub-directories) will be scanned, at which point it can be us
 `sort` flag to rank the files by ABC magnitude:
 
 ```bash
-$ python main.py . --sort=true
+$ python -m python_abc . --sort=true
 ./calculate.py                              <18, 56, 23> (63.2)
 ./vector.py                                 <12, 23, 11> (28.2)
 ./main.py                                    <10, 23, 8> (26.3)
@@ -120,4 +120,4 @@ $ python main.py . --sort=true
 [1]: https://www.python.org/downloads/release/python-395/
 [2]: https://en.wikipedia.org/wiki/ABC_Software_Metric
 [3]: https://web.archive.org/web/20210606115110/https://www.softwarerenovation.com/ABCMetric.pdf
-[4]: ABCMetric.pdf
+[4]: https://github.com/eoinnoble/python-abc/blob/main/ABCMetric.pdf
