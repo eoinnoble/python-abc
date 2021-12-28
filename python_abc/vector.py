@@ -51,10 +51,10 @@ class Vector:
     def get_magnitude_value(self) -> float:
         """Fitzpatrick's original paper defines the magnitude for a given vector as
 
-            |ABC| = sqrt((A*A)+(B*B)+(C*C)
+            |ABC| = sqrt((A*A)+(B*B)+(C*C))
 
         and 'is always rounded to the nearest tenth and is reported using one digit following the
-        decimal point'"""
+        decimal point'."""
         return round(
             math.sqrt(
                 sum(
