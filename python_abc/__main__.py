@@ -1,42 +1,43 @@
 import argparse
+import multiprocessing
 import os
-from typing import List, Optional, Tuple
+from typing import List
+
+from joblib import Parallel, delayed
 
 from python_abc.calculate import calculate_abc
-from python_abc.vector import Vector
 
 
 def main():
     parser = argparse.ArgumentParser(
         prog="python-abc",
         description="""\
-            A python implementation of the ABC Sofware metric:
+            A python implementation of the ABC Software metric:
             https://en.wikipedia.org/wiki/ABC_Software_Metric
         """,
     )
-    parser.add_argument(
-        "path", nargs=1, type=str, help="path to directory or file"
-    )
+    parser.add_argument("path", nargs=1, type=str, help="path to directory or file")
     parser.add_argument(
         "--debug",
         dest="debug",
-        type=bool,
-        default=False,
+        action="store_true",
         help="display AST output for each element in the parsed tree",
+    )
+    parser.add_argument(
+        "--cores",
+        dest="cores",
+        type=int,
+        default=multiprocessing.cpu_count(),
+        help="number of cores to use",
     )
     parser.add_argument(
         "--sort",
         dest="sort",
-        type=bool,
-        default=False,
+        action="store_true",
         help="sort files from highest to lowest magnitude",
     )
     parser.add_argument(
-        "--verbose",
-        dest="verbose",
-        type=bool,
-        default=False,
-        help="display marked-up file",
+        "--verbose", dest="verbose", action="store_true", help="display marked-up file",
     )
 
     args = vars(parser.parse_args())
@@ -56,17 +57,20 @@ def main():
 
     max_path_length = max(len(file) for file in files)
 
-    output: List[Tuple[str, Optional[Vector], float]] = []
-    for filename in files:
+    def analyze_file(filename):
         with open(filename, "r") as f:
             source = f.read()
 
             try:
                 abc_vector = calculate_abc(source, args["debug"], args["verbose"])
             except SyntaxError:
-                output.append((filename, None, 0.0))
+                return (filename, None, 0.0)
             else:
-                output.append((filename, abc_vector, abc_vector.get_magnitude_value()))
+                return (filename, abc_vector, abc_vector.get_magnitude_value())
+
+    output = Parallel(n_jobs=args["cores"])(
+        delayed(analyze_file)(filename) for filename in files
+    )
 
     if args["sort"] is True:
         output.sort(key=lambda x: x[2], reverse=True)

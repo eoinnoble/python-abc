@@ -2,7 +2,7 @@
 
 [![Python 3.9.5](https://img.shields.io/badge/python-3.9.5-blue.svg)][1]
 
-A python implementation of [the ABC Sofware metric][2]:
+A python implementation of [the ABC Software metric][2]:
 
 > The ABC software metric was introduced by Jerry Fitzpatrick in 1997 to overcome the drawbacks of the LOC. The metric defines an ABC score as a triplet of values that represent the size of a set of source code statements. An ABC score is calculated by counting the number of assignments (A), number of branches (B), and number of conditionals (C) in a program. ABC score can be applied to individual methods, functions, classes, modules or files within a program.
 
@@ -31,7 +31,7 @@ arguments that are available:
 $ python -m python_abc --help
 usage: python_abc [-h] [--debug DEBUG] [--sort SORT] [--verbose VERBOSE] path
 
-A python implementation of the ABC Sofware metric: https://en.wikipedia.org/wiki/ABC_Software_Metric
+A python implementation of the ABC Software metric: https://en.wikipedia.org/wiki/ABC_Software_Metric
 
 positional arguments:
   path               path to directory or file
@@ -104,7 +104,7 @@ directory (and its sub-directories) will be scanned, at which point it can be us
 `sort` flag to rank the files by ABC magnitude:
 
 ```bash
-$ python -m python_abc . --sort=true
+$ python -m python_abc . --sort
 ./calculate.py                              <18, 56, 23> (63.2)
 ./vector.py                                 <12, 23, 11> (28.2)
 ./main.py                                    <10, 23, 8> (26.3)
@@ -116,6 +116,9 @@ $ python -m python_abc . --sort=true
 ./tests/test_calculate_assignment.py            <1, 2, 1> (2.4)
 ./tests/test_calculate_branch.py                <1, 2, 1> (2.4)
 ```
+
+Finally you can pass a `cores` argument to tell the library how many CPU cores to use. By
+default the library will try to use all the cores that are available on your machine.
 
 [1]: https://www.python.org/downloads/release/python-395/
 [2]: https://en.wikipedia.org/wiki/ABC_Software_Metric

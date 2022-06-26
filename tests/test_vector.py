@@ -5,17 +5,6 @@ import pytest
 from python_abc import vector
 
 
-def test_metric_fields():
-    fields = vector.Vector(0, 0, 0).metric_fields
-
-    assert [field.name for field in fields] == ["assignment", "branch", "condition"]
-
-
-def test_adding_a_vector_to_another_object_type():
-    with pytest.raises(TypeError):
-        vector.empty(ast.AST()) + 1
-
-
 def test_adding_vectors_together():
     empty = vector.empty(ast.AST(), lineno=1)
     assignment = vector.assignment(ast.AST(), lineno=2)
