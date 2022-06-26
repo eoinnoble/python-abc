@@ -1,4 +1,5 @@
 black
+joblib
 mypy
 pip-tools
 pytest

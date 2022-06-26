@@ -1,4 +1,5 @@
 import argparse
+import multiprocessing
 import os
 from typing import List, Optional, Tuple
 
@@ -10,33 +11,32 @@ def main():
     parser = argparse.ArgumentParser(
         prog="python-abc",
         description="""\
-            A python implementation of the ABC Sofware metric:
+            A python implementation of the ABC Software metric:
             https://en.wikipedia.org/wiki/ABC_Software_Metric
         """,
     )
-    parser.add_argument(
-        "path", nargs=1, type=str, help="path to directory or file"
-    )
+    parser.add_argument("path", nargs=1, type=str, help="path to directory or file")
     parser.add_argument(
         "--debug",
         dest="debug",
-        type=bool,
-        default=False,
+        action="store_true",
         help="display AST output for each element in the parsed tree",
     )
     parser.add_argument(
         "--sort",
         dest="sort",
-        type=bool,
-        default=False,
+        action="store_true",
         help="sort files from highest to lowest magnitude",
     )
     parser.add_argument(
-        "--verbose",
-        dest="verbose",
-        type=bool,
-        default=False,
-        help="display marked-up file",
+        "--verbose", dest="verbose", action="store_true", help="display marked-up file",
+    )
+    parser.add_argument(
+        "--cores",
+        dest="cores",
+        type=int,
+        default=multiprocessing.cpu_count(),
+        help="number of cores to use",
     )
 
     args = vars(parser.parse_args())

@@ -1,45 +1,38 @@
 import ast
 import math
-from dataclasses import Field, dataclass, fields
-from typing import Annotated, List, Optional
+from typing import Optional
 
 # https://en.wikipedia.org/wiki/ABC_Software_Metric
 # https://web.archive.org/web/20210606115110/https://www.softwarerenovation.com/ABCMetric.pdf
 
 
-@dataclass
 class Vector:
-    assignment: int
-    branch: int
-    condition: int
-    lineno: int = 0  # files start on line 1, so this is essentially a null default
-    node: Optional[ast.AST] = None
+    __slots__ = ("assignment", "branch", "condition", "lineno", "node")
 
-    @property
-    def metric_fields(self) -> Annotated[List[Field], 3]:
-        return [
-            field
-            for field in fields(self)
-            if field.name in ["assignment", "branch", "condition"]
-        ]
+    def __init__(
+        self,
+        assignment: int,
+        branch: int,
+        condition: int,
+        lineno: int = 0,  # files start on line 1, so this is essentially a null default
+        node: Optional[ast.AST] = None,
+    ):
+        self.assignment = assignment
+        self.branch = branch
+        self.condition = condition
+        self.lineno = lineno
+        self.node = node
 
-    def __add__(self, other) -> "Vector":
-        if not isinstance(other, type(self)):
-            raise TypeError(
-                f'unsupported operand type(s) for +: "{type(self)}" and "{type(other)}"'
-            )
-
-        assignment, branch, condition = (
-            getattr(self, count_type.name) + getattr(other, count_type.name)
-            for count_type in self.metric_fields
+    def __add__(self, other: "Vector") -> "Vector":
+        return Vector(
+            self.assignment + other.assignment,
+            self.branch + other.branch,
+            self.condition + other.condition,
+            self.lineno,
         )
-
-        return Vector(assignment, branch, condition, self.lineno)
 
     def __bool__(self) -> bool:
-        return any(
-            getattr(self, count_type.name) > 0 for count_type in self.metric_fields
-        )
+        return self.assignment > 0 or self.branch > 0 or self.condition > 0
 
     def __str__(self) -> str:
         return f"<{self.assignment}, {self.branch}, {self.condition}>"
@@ -58,10 +51,11 @@ class Vector:
         return round(
             math.sqrt(
                 sum(
-                    [
-                        math.pow(getattr(self, count_type.name), 2)
-                        for count_type in self.metric_fields
-                    ]
+                    (
+                        self.assignment * self.assignment,
+                        self.branch * self.branch,
+                        self.condition * self.condition,
+                    )
                 )
             ),
             1,
