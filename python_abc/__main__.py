@@ -1,10 +1,11 @@
 import argparse
 import multiprocessing
 import os
-from typing import List, Optional, Tuple
+from typing import List
+
+from joblib import Parallel, delayed
 
 from python_abc.calculate import calculate_abc
-from python_abc.vector import Vector
 
 
 def main():
@@ -23,6 +24,13 @@ def main():
         help="display AST output for each element in the parsed tree",
     )
     parser.add_argument(
+        "--cores",
+        dest="cores",
+        type=int,
+        default=multiprocessing.cpu_count(),
+        help="number of cores to use",
+    )
+    parser.add_argument(
         "--sort",
         dest="sort",
         action="store_true",
@@ -30,13 +38,6 @@ def main():
     )
     parser.add_argument(
         "--verbose", dest="verbose", action="store_true", help="display marked-up file",
-    )
-    parser.add_argument(
-        "--cores",
-        dest="cores",
-        type=int,
-        default=multiprocessing.cpu_count(),
-        help="number of cores to use",
     )
 
     args = vars(parser.parse_args())
@@ -56,17 +57,20 @@ def main():
 
     max_path_length = max(len(file) for file in files)
 
-    output: List[Tuple[str, Optional[Vector], float]] = []
-    for filename in files:
+    def analyze_file(filename):
         with open(filename, "r") as f:
             source = f.read()
 
             try:
                 abc_vector = calculate_abc(source, args["debug"], args["verbose"])
             except SyntaxError:
-                output.append((filename, None, 0.0))
+                return (filename, None, 0.0)
             else:
-                output.append((filename, abc_vector, abc_vector.get_magnitude_value()))
+                return (filename, abc_vector, abc_vector.get_magnitude_value())
+
+    output = Parallel(n_jobs=args["cores"])(
+        delayed(analyze_file)(filename) for filename in files
+    )
 
     if args["sort"] is True:
         output.sort(key=lambda x: x[2], reverse=True)
