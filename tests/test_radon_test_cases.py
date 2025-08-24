@@ -1,6 +1,6 @@
 import pytest
 
-from tests import assert_source_returns_expected
+from tests.helpers import assert_source_returns_expected
 
 # These test cases were taken from the Radon package test suite, with overlapping ones removed
 # It's very useful to have some tests that were written by other people!

@@ -1,6 +1,6 @@
 import pytest
 
-from tests import assert_source_returns_expected
+from tests.helpers import assert_source_returns_expected
 
 
 BRANCH_CASES = [
