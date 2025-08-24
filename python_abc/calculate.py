@@ -12,7 +12,7 @@ def calculate_abc_for_node(node_class: ast.AST) -> List[vector.Vector]:
 
 
 def handle_else(
-    node_class: Union[ast.For, ast.If, ast.IfExp, ast.Try, ast.While]
+    node_class: Union[ast.For, ast.If, ast.IfExp, ast.Try, ast.While],
 ) -> vector.Vector:
     """The code in an elif/else block does not have the lineno of the elif/else statement, so
     if we want to accurately decorate the line then we need to manually adjust the lineno
@@ -73,6 +73,11 @@ def ast_annassign(node_class: ast.AnnAssign):
 
 @calculate_abc_for_node.register
 def ast_augassign(node_class: ast.AugAssign):
+    return [vector.assignment(node_class)]
+
+
+@calculate_abc_for_node.register
+def ast_namedexpr(node_class: ast.NamedExpr):
     return [vector.assignment(node_class)]
 
 

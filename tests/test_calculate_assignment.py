@@ -12,6 +12,45 @@ ASSIGNMENT_CASES = [
     ("(a): int = 1", "a | (a): int = 1"),
     # Assignment by destructuring
     ("a, b, c = d", "aaa | a, b, c = d"),
+    pytest.param(
+        "if a := {'found': True}: pass",
+        "ac | if a := {'found': True}: pass",
+        id="Walrus operator assignment, implicit else",
+    ),
+    pytest.param(
+        """\
+        if a := {'found': True}:
+            pass
+        else:
+            pass
+        """,
+        """\
+        ac | if a := {'found': True}:
+           |     pass
+        c  | else:
+           |     pass
+        """,
+        id="Walrus operator assignment, if/else",
+    ),
+    pytest.param(
+        """\
+        if a := {'found': True}:
+            pass
+        elif b := {'also_found': True}:
+            pass
+        else:
+            pass
+        """,
+        """\
+        ac  | if a := {'found': True}:
+            |     pass
+        acc | elif b := {'also_found': True}:
+            |     pass
+        c   | else:
+            |     pass
+        """,
+        id="Walrus operator assignment, if/elif/else",
+    ),
 ]
 
 
