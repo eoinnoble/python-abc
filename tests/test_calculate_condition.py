@@ -4,14 +4,10 @@ from tests.helpers import assert_source_returns_expected
 
 
 CONDITION_CASES = [
-    # BoolOp
-    ("True and False", "cc | True and False"),
-    # BoolOp with implicit conditionals
-    ("a and b", "cc | a and b"),
-    # Test compare
-    ("a > b", "c | a > b"),
-    # Try/except/finally
-    (
+    pytest.param("True and False", "cc | True and False", id="BoolOp"),
+    pytest.param("a and b", "cc | a and b", id="BoolOp with implicit conditionals"),
+    pytest.param("a > b", "c | a > b", id="Comparison"),
+    pytest.param(
         """\
         try:
             a / b
@@ -28,9 +24,9 @@ CONDITION_CASES = [
           | finally:
           |     pass
         """,
+        id="Try/except/finally",
     ),
-    # Try/except/else
-    (
+    pytest.param(
         """\
         try:
             a / b
@@ -47,13 +43,11 @@ CONDITION_CASES = [
         c | else:
           |     pass
         """,
+        id="Try/except/else",
     ),
-    # If
-    ("if True: pass", " | if True: pass"),
-    # If with implicit boolean check
-    ("if a: pass", "c | if a: pass"),
-    # If/else
-    (
+    pytest.param("if True: pass", " | if True: pass", id="If"),
+    pytest.param("if a: pass", "c | if a: pass", id="If with implicit boolean check"),
+    pytest.param(
         """\
         if True:
             pass
@@ -66,9 +60,9 @@ CONDITION_CASES = [
         c | else:
           |     pass
         """,
+        id="If/else",
     ),
-    # If/elif/else
-    (
+    pytest.param(
         """\
         if True:
             pass
@@ -85,9 +79,9 @@ CONDITION_CASES = [
         c | else:
           |     pass
         """,
+        id="If/elif/else",
     ),
-    # For/else
-    (
+    pytest.param(
         """\
         for letter in "hello":
             pass
@@ -100,9 +94,9 @@ CONDITION_CASES = [
         c | else:
           |     pass
         """,
+        id="For/else",
     ),
-    # While/else
-    (
+    pytest.param(
         """\
         while True:
             pass
@@ -115,14 +109,15 @@ CONDITION_CASES = [
         c | else:
           |     pass
         """,
+        id="While/else",
     ),
-    # Assertion with explicit conditional
-    ("assert a > b", "c | assert a > b"),
-    # Assertion with tacit conditional
-    ("assert a", "c | assert a"),
+    pytest.param(
+        "assert a > b", "c | assert a > b", id="Assertion with explicit conditional"
+    ),
+    pytest.param("assert a", "c | assert a", id="Assertion with tacit conditional"),
 ]
 
 
 @pytest.mark.parametrize("source,expected", CONDITION_CASES)
-def test_condition(capsys, source, expected):
-    assert_source_returns_expected(capsys, source, expected) is True
+def test_condition(capsys: pytest.CaptureFixture, source: str, expected: str):
+    assert_source_returns_expected(capsys, source, expected)

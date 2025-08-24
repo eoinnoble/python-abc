@@ -1,3 +1,4 @@
+import ast
 from textwrap import dedent
 
 import pytest
@@ -15,4 +16,11 @@ def assert_source_returns_expected(
 
     captured = capsys.readouterr()
     output = "\n".join(line.strip() for line in captured.out.split("\n")).rstrip()
-    assert output == expected
+
+    for output_line, expected_line in zip(
+        output.split("\n"), expected.split("\n"), strict=True
+    ):
+        if output_line == expected_line:
+            continue
+
+        assert output_line == expected_line, ast.dump(ast.parse(input), indent=4)

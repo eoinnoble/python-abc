@@ -423,5 +423,5 @@ RADON_CASES = [
 
 
 @pytest.mark.parametrize("source,expected", RADON_CASES)
-def test_radon(capsys, source, expected):
-    assert_source_returns_expected(capsys, source, expected) is True
+def test_radon(capsys: pytest.CaptureFixture, source: str, expected: str):
+    assert_source_returns_expected(capsys, source, expected)
