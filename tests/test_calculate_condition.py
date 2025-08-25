@@ -115,6 +115,152 @@ CONDITION_CASES = [
         "assert a > b", "c | assert a > b", id="Assertion with explicit conditional"
     ),
     pytest.param("assert a", "c | assert a", id="Assertion with tacit conditional"),
+    pytest.param(
+        """\
+        match x:
+            case [x] if x > 0:
+                ...
+        """,
+        """\
+            | match x:
+        acc |     case [x] if x > 0:
+            |         ...
+        """,
+        id="ast.match_case",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case "Relevant":
+                ...
+        """,
+        """\
+          | match x:
+        c |     case "Relevant":
+          |         ...
+        """,
+        id="ast.MatchValue",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case None:
+                ...
+        """,
+        """\
+          | match x:
+        c |     case None:
+          |         ...
+        """,
+        id="ast.MatchSingleton",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case [1, 2]:
+                ...
+        """,
+        """\
+          | match x:
+        c |     case [1, 2]:
+          |         ...
+        """,
+        id="ast.MatchSequence",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case [1, 2, *rest]:
+                ...
+            case [*_]:
+                ...
+        """,
+        """\
+           | match x:
+        ac |     case [1, 2, *rest]:
+           |         ...
+        c  |     case [*_]:
+           |         ...
+        """,
+        id="ast.MatchStar",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case [1, 2]:
+                ...
+        """,
+        """\
+          | match x:
+        c |     case [1, 2]:
+          |         ...
+        """,
+        id="ast.MatchSequence",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case {1: _, 2: _}:
+                ...
+            case {**rest}:
+                ...
+        """,
+        """\
+           | match x:
+        c  |     case {1: _, 2: _}:
+           |         ...
+        ac |     case {**rest}:
+           |         ...
+        """,
+        id="ast.MatchMapping",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case Point2D(0, 0):
+                ...
+            case Point3D(x=0, y=0, z=0):
+                ...
+        """,
+        """\
+          | match x:
+        c |     case Point2D(0, 0):
+          |         ...
+        c |     case Point3D(x=0, y=0, z=0):
+          |         ...
+        """,
+        id="ast.MatchClass",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case [x] as y:
+                ...
+            case _:
+                ...
+        """,
+        """\
+            | match x:
+        aac |     case [x] as y:
+            |         ...
+        c   |     case _:
+            |         ...
+        """,
+        id="ast.MatchAs",
+    ),
+    pytest.param(
+        """\
+        match x:
+            case [x] | (y):
+                ...
+        """,
+        """\
+            | match x:
+        aac |     case [x] | (y):
+            |         ...
+        """,
+        id="ast.MatchOr",
+    ),
 ]
 
 
