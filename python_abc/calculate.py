@@ -133,6 +133,14 @@ def ast_matchas(node_class: ast.MatchAs):
     return [vector.empty(node_class)]
 
 
+def ast_withitem(node_class: ast.withitem):
+    if isinstance(node_class.optional_vars, ast.Name):
+        # This is a context manager with a target
+        return [vector.assignment(node_class.optional_vars)]
+
+    return [vector.empty(node_class)]
+
+
 # Syntax contributing to branch count
 @calculate_abc_for_node.register
 def ast_call(node_class: ast.Call):

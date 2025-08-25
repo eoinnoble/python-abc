@@ -49,6 +49,28 @@ ASSIGNMENT_CASES = [
         """,
         id="Walrus operator assignment, if/elif/else",
     ),
+    pytest.param(
+        """\
+        with A(), B():
+            continue
+        """,
+        """\
+        bb | with A(), B():
+             |     continue
+        """,
+        id="Multiple context managers without targets on a single line",
+    ),
+    pytest.param(
+        """\
+        with A() as a, B() as b:
+            continue
+        """,
+        """\
+        aabb | with A() as a, B() as b:
+             |     continue
+        """,
+        id="Multiple context managers with targets on a single line",
+    ),
 ]
 
 

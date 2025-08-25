@@ -68,7 +68,7 @@ RADON_CASES = [
     ("while a < 4 and b < 42: pass", "cc | while a < 4 and b < 42: pass"),
     (
         "with open('raw.py') as fobj: print(fobj.read())",
-        "bbb | with open('raw.py') as fobj: print(fobj.read())",
+        "abbb | with open('raw.py') as fobj: print(fobj.read())",
     ),
     ("[i for i in range(4) if i&1]", "b | [i for i in range(4) if i&1]"),
     ("k = lambda a, b, c: c if a else b", "acc | k = lambda a, b, c: c if a else b"),
@@ -228,7 +228,7 @@ RADON_CASES = [
              |         return 1
         c    |     else:
         a    |         k = 0
-        b    |         with open('results.txt', 'w') as fobj:
+        ab   |         with open('results.txt', 'w') as fobj:
         b    |             for i in range(b ** c):
         abbc |                 k += sum(1 / j for j in range(i ** 2) if j > 2)
         bb   |             fobj.write(str(k))
