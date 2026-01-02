@@ -1,11 +1,10 @@
 import pytest
 
-from tests import assert_source_returns_expected
+from tests.helpers import assert_source_returns_expected
 
 
 EMPTY_CASES = [
-    # Function definition
-    (
+    pytest.param(
         """\
         def hello():
             pass
@@ -14,9 +13,9 @@ EMPTY_CASES = [
           | def hello():
           |     pass
         """,
+        id="Function definition",
     ),
-    # Async function definition
-    (
+    pytest.param(
         """\
         async def hello():
             pass
@@ -25,9 +24,9 @@ EMPTY_CASES = [
           | async def hello():
           |     pass
         """,
+        id="Async function definition",
     ),
-    # Class definition
-    (
+    pytest.param(
         """\
         class Hello():
             pass
@@ -36,14 +35,13 @@ EMPTY_CASES = [
           | class Hello():
           |     pass
         """,
+        id="Class definition",
     ),
-    # Comprehension
-    ("[x for x in y]", " | [x for x in y]"),
-    # Lambda
-    ("lambda x: x", " | lambda x: x"),
+    pytest.param("[x for x in y]", " | [x for x in y]", id="Comprehension"),
+    pytest.param("lambda x: x", " | lambda x: x", id="Lambda"),
 ]
 
 
 @pytest.mark.parametrize("source,expected", EMPTY_CASES)
-def test_empty(capsys, source, expected):
-    assert_source_returns_expected(capsys, source, expected) is True
+def test_empty(capsys: pytest.CaptureFixture, source: str, expected: str):
+    assert_source_returns_expected(capsys, source, expected)

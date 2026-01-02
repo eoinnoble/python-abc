@@ -12,7 +12,7 @@ def calculate_abc_for_node(node_class: ast.AST) -> List[vector.Vector]:
 
 
 def handle_else(
-    node_class: Union[ast.For, ast.If, ast.IfExp, ast.Try, ast.While]
+    node_class: Union[ast.For, ast.If, ast.IfExp, ast.Try, ast.While],
 ) -> vector.Vector:
     """The code in an elif/else block does not have the lineno of the elif/else statement, so
     if we want to accurately decorate the line then we need to manually adjust the lineno
@@ -76,6 +76,71 @@ def ast_augassign(node_class: ast.AugAssign):
     return [vector.assignment(node_class)]
 
 
+@calculate_abc_for_node.register
+def ast_namedexpr(node_class: ast.NamedExpr):
+    return [vector.assignment(node_class)]
+
+
+@calculate_abc_for_node.register
+def ast_matchcase(node_class: ast.match_case):
+    if pattern := node_class.pattern:
+        if isinstance(
+            pattern,
+            (
+                ast.MatchClass,
+                ast.MatchMapping,
+                ast.MatchSingleton,
+                ast.MatchStar,
+                ast.MatchValue,
+            ),
+        ):
+            return [vector.condition(pattern)]
+
+        if isinstance(pattern, ast.MatchAs) and not pattern.name:  # case _:
+            # This has to be handled here because ast.MatchMapping can have name-less MatchAs items
+            # in its patterns
+            return [vector.condition(pattern)]
+
+    return [vector.empty(node_class)]
+
+
+@calculate_abc_for_node.register
+def ast_matchstar(node_class: ast.MatchStar):
+    if node_class.name:
+        # case [*objects]: ...
+        return [vector.assignment(node_class)]
+
+    # case [*_]:
+    return [vector.empty(node_class)]
+
+
+@calculate_abc_for_node.register
+def ast_matchmapping(node_class: ast.MatchMapping):
+    if node_class.rest:
+        # case {**objects}: ...
+        return [vector.assignment(node_class)]
+
+    # case {**_}:
+    return [vector.empty(node_class)]
+
+
+@calculate_abc_for_node.register
+def ast_matchas(node_class: ast.MatchAs):
+    if node_class.name:
+        # case [x] as y: ...
+        return [vector.assignment(node_class)]
+
+    return [vector.empty(node_class)]
+
+
+def ast_withitem(node_class: ast.withitem):
+    if isinstance(node_class.optional_vars, ast.Name):
+        # This is a context manager with a target
+        return [vector.assignment(node_class.optional_vars)]
+
+    return [vector.empty(node_class)]
+
+
 # Syntax contributing to branch count
 @calculate_abc_for_node.register
 def ast_call(node_class: ast.Call):
@@ -136,6 +201,12 @@ def ast_assert(node_class: ast.Assert):
         return [vector.empty(node_class)]
 
 
+@calculate_abc_for_node.register
+def ast_matchsequence(node_class: ast.MatchSequence):
+    # case ["hello"]
+    return [vector.condition(node_class)]
+
+
 def calculate_abc(
     source: str, debug: bool = False, verbose: bool = False
 ) -> vector.Vector:
@@ -178,9 +249,9 @@ def calculate_abc(
             [line["decoration"] for line in temp.values()], source_split
         )
         for decoration, line in decorated_text:
-            decoration = "".join(sorted(decoration))
+            sorted_decoration = "".join(sorted(decoration))
             print(
-                f"{decoration:<{decoration_length}} | {line:<{88 - decoration_length - 3}}"
+                f"{sorted_decoration:<{decoration_length}} | {line:<{88 - decoration_length - 3}}"
             )
 
     return final_vector
