@@ -6,6 +6,7 @@ from typing import List
 from joblib import Parallel, delayed
 
 from python_abc.calculate import calculate_abc
+from python_abc.output import AnalysisResult, render_json, render_text
 
 
 def main():
@@ -39,8 +40,18 @@ def main():
     parser.add_argument(
         "--verbose", dest="verbose", action="store_true", help="display marked-up file",
     )
+    parser.add_argument(
+        "--format",
+        dest="format",
+        choices=("text", "json"),
+        default="text",
+        help="output format",
+    )
 
     args = vars(parser.parse_args())
+    if args["format"] == "json" and (args["debug"] or args["verbose"]):
+        parser.error("--format json cannot be used with --debug or --verbose")
+
     path = args["path"][0]
     files: List[str] = []
 
@@ -55,8 +66,6 @@ def main():
     else:
         files.append(path)
 
-    max_path_length = max(len(file) for file in files)
-
     def analyze_file(filename):
         with open(filename, "r") as f:
             source = f.read()
@@ -64,22 +73,23 @@ def main():
             try:
                 abc_vector = calculate_abc(source, args["debug"], args["verbose"])
             except SyntaxError:
-                return (filename, None, 0.0)
+                return AnalysisResult(filename, None, 0.0)
             else:
-                return (filename, abc_vector, abc_vector.get_magnitude_value())
+                return AnalysisResult(
+                    filename, abc_vector, abc_vector.get_magnitude_value()
+                )
 
     output = Parallel(n_jobs=args["cores"])(
         delayed(analyze_file)(filename) for filename in files
     )
 
     if args["sort"] is True:
-        output.sort(key=lambda x: x[2], reverse=True)
+        output.sort(key=lambda result: result.sort_magnitude, reverse=True)
 
-    for filename, vector, _ in output:
-        if vector is None:
-            print(f"{filename:<{max_path_length}} {'Unable to parse AST':>26}")
-        else:
-            print(f"{filename:<{max_path_length}} {vector.magnitude:>26}")
+    if args["format"] == "json":
+        print(render_json(path, output))
+    else:
+        print(render_text(output))
 
 
 if __name__ == "__main__":
