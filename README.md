@@ -41,6 +41,8 @@ optional arguments:
   --debug DEBUG      display AST output for each element in the parsed tree
   --sort SORT        sort files from highest to lowest magnitude
   --verbose VERBOSE  display marked-up file
+  --format {text,json}
+                    output format
 ```
 
 Given `file.py` that contains the following text:
@@ -70,6 +72,33 @@ You can get the barebones output as follows:
 ```bash
 $ python -m python_abc /path/to/file.py
 /path/to/file.py         <1, 7, 10> (12.2)
+```
+
+You can also emit machine-readable JSON:
+
+```bash
+$ python -m python_abc /path/to/file.py --format json
+{
+  "path": "/path/to/file.py",
+  "files": [
+    {
+      "path": "/path/to/file.py",
+      "status": "ok",
+      "vector": {
+        "assignment": 1,
+        "branch": 7,
+        "condition": 10
+      },
+      "magnitude": 12.2,
+      "error": null
+    }
+  ],
+  "summary": {
+    "files": 1,
+    "parsed": 1,
+    "syntax_errors": 0
+  }
+}
 ```
 
 Passing the `verbose` flag will give more detail:
